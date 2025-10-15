@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 // load secrets from parameter store
 await ParameterStoreHelper.LoadSecretsToEnvironmentAsync();
 
-var jwtSettingsJson = Environment.GetEnvironmentVariable("jwt");
+var jwtSettingsJson = Environment.GetEnvironmentVariable("Jwt");
 var googleSettingsJson = Environment.GetEnvironmentVariable("Google");
 var githubModelsToken = Environment.GetEnvironmentVariable("GitHubModelsToken");
 
