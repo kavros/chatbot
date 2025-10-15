@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "lambda-api": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "REGION": "eu-west-2"
+      },
+      "applicationUrl": "https://localhost:54793;http://localhost:54794"
+    },
+    "Mock Lambda Test Tool": {
+      "commandName": "Executable",
+      "executablePath": "%USERPROFILE%\\.dotnet\\tools\\dotnet-lambda-test-tool-8.0.exe",
+      "commandLineArgs": "--port 5050",
+      "workingDirectory": ".\\bin\\$(Configuration)\\net8.0"
+    }
+  }
+}

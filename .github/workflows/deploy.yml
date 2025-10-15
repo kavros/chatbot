@@ -1,0 +1,108 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches:
+      - main
+      - production
+
+jobs:
+  build-and-deploy-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set environment variables
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/production" ]; then
+            echo "S3_BUCKET=chatbot-bucket-prod-113" >> $GITHUB_ENV
+            echo "BUILD_SCRIPT=build:prod" >> $GITHUB_ENV
+          else
+            echo "S3_BUCKET=chatbot-bucket-dev-113" >> $GITHUB_ENV
+            echo "BUILD_SCRIPT=build:dev" >> $GITHUB_ENV
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "lts/*"
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./frontend
+
+      - name: Build UI
+        run: npm run ${{ env.BUILD_SCRIPT }}
+        working-directory: ./frontend
+
+      - name: Sync to S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --delete
+        env:
+          AWS_S3_BUCKET: ${{ env.S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-west-2
+          SOURCE_DIR: ./frontend/build
+
+  build-and-deploy-backend:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy-frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set environment variables
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/production" ]; then
+            echo "LAMBDA_FUNCTION=lambda_api_prod" >> $GITHUB_ENV
+            echo "CLUSTER_ENDPOINT=${{ secrets.DSQL_CLUSTER_ENDPOINT_PROD }}" >> $GITHUB_ENV
+          else
+            echo "LAMBDA_FUNCTION=lambda_api_dev" >> $GITHUB_ENV
+            echo "CLUSTER_ENDPOINT=${{ secrets.DSQL_CLUSTER_ENDPOINT_DEV }}" >> $GITHUB_ENV
+          fi
+          echo "PGUSER=admin" >> $GITHUB_ENV
+          echo "PGDATABASE=postgres" >> $GITHUB_ENV
+          echo "AWS_REGION=eu-west-2" >> $GITHUB_ENV
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.x"
+
+      - name: Build Lambda Function
+        run: |
+          dotnet restore ./backend/src/lambda-api/lambda-api.csproj
+          dotnet publish ./backend/src/lambda-api/lambda-api.csproj -c Release -r linux-x64 --self-contained false -o ./lambda-api/publish
+        working-directory: ./
+
+      - name: Zip Lambda Function
+        run: |
+          cd backend/publish
+          zip -r ../../lambda-api.zip .
+        working-directory: ./
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+
+      - name: Update Lambda Function Code
+        run: |
+          aws lambda update-function-code --function-name ${{ env.LAMBDA_FUNCTION }} --zip-file fileb://lambda-api.zip
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Run database migration
+        env:
+          PGPASSWORD: ${{ steps.generate_token.outputs.token }}
+        run: |
+          export PGPASSWORD=$(aws dsql generate-db-connect-admin-auth-token --expires-in 900 --hostname $CLUSTER_ENDPOINT --region $AWS_REGION)
+          psql "host=$CLUSTER_ENDPOINT port=5432 dbname=$PGDATABASE user=$PGUSER sslmode=require" -f backend/src/lambda-api/Script/migration.sql
