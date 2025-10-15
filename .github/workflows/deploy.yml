@@ -77,7 +77,7 @@ jobs:
       - name: Build Lambda Function
         run: |
           dotnet restore ./backend/src/lambda-api/lambda-api.csproj
-          dotnet publish ./backend/src/lambda-api/lambda-api.csproj -c Release -r linux-x64 --self-contained false -o ./lambda-api/publish
+          dotnet publish ./backend/src/lambda-api/lambda-api.csproj -c Release -r linux-x64 --self-contained false -o ./backend/publish
         working-directory: ./
 
       - name: Zip Lambda Function
