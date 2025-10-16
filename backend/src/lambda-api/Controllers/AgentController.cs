@@ -1,4 +1,5 @@
 ﻿using Microsoft.Agents.AI;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using System.Text.Json;
@@ -6,6 +7,7 @@ using System.Text.Json;
 namespace Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class AgentController(
         [FromKeyedServices("webSearchAgent")] AIAgent webSearchAgent

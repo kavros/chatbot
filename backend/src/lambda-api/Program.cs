@@ -2,9 +2,8 @@ using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.AI;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models; // Add this for Swagger
+using Microsoft.Extensions.AI;
 using OpenAI;
 using OpenAI.Chat;
 using Project1.Tools;
@@ -25,7 +24,6 @@ if (string.IsNullOrEmpty(jwtSettingsJson) || string.IsNullOrEmpty(googleSettings
     throw new InvalidOperationException("Environment variable 'jwt' is not set.");
 }
 
-
 var jwtSettings = System.Text.Json.JsonSerializer.Deserialize<JwtSettings>(jwtSettingsJson) ?? throw new InvalidOperationException("Failed to deserialize 'jwt' environment variable into JwtSettings.");
 var googleSettings = System.Text.Json.JsonSerializer.Deserialize<GoogleSettings>(googleSettingsJson) ?? throw new InvalidOperationException("Failed to deserialize 'Google' environment variable into GoogleSettings.");
 // Register JwtSettings in the DI container
@@ -40,26 +38,6 @@ builder.Services.Configure<GoogleSettings>(options =>
 {
     options.ClientId = googleSettings.ClientId;
 });
-
-// Add JWT Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings.Issuer,
-            ValidAudience = jwtSettings.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtSettings.SecretKey!)),
-            ClockSkew = TimeSpan.FromMinutes(1), // Reduce clock skew tolerance
-            RequireExpirationTime = true
-        };
-    });
-
 
 builder.Services.AddChatClient(
     new ChatClient(
@@ -92,10 +70,11 @@ builder.AddAIAgent("webSearchAgent", (sp, key) =>
         ]
     );
 });
-builder.Services.AddAuthorization();
 
-builder.Services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>()
- .AddEntityFrameworkStores<UserDbContext>();
+// Use AddIdentityCore instead of AddIdentity for API scenarios
+builder.Services.AddIdentityCore<IdentityUser<Guid>>()
+    .AddRoles<IdentityRole<Guid>>()
+    .AddEntityFrameworkStores<UserDbContext>();
 
 builder.Services.AddDbContext<UserDbContext>();
 
@@ -106,17 +85,20 @@ builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Add Swagger services
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
+// Configure Authorization and Authentication
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        Title = "My API",
-        Version = "v1",
-        Description = "API documentation for my application",
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ClockSkew = TimeSpan.Zero,
+            ValidIssuer = jwtSettings.Issuer,
+            ValidAudience = jwtSettings.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
+        };
     });
-});
 
 var app = builder.Build();
 
@@ -127,18 +109,10 @@ app.UseCors(policy =>
           .AllowAnyHeader()
           .AllowAnyMethod();
 });
-app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Enable Swagger middleware
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API v1");
-    c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
-});
-
+app.UseHttpsRedirection();
 app.MapControllers();
 
 app.MapGet("/", () => "Welcome to running ASP.NET Core Minimal API on AWS Lambda");

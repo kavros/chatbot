@@ -1,5 +1,4 @@
 using System.Text.Json;
-using lambda_api.Controllers; // For JwtSettings
 
 public static class JwtSettingsProvider
 {
