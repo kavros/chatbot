@@ -7,7 +7,7 @@ resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
 locals {
   # Remove leading "*." if present (e.g. "*.microapps.info" -> "microapps.info")
   base_domain = replace(var.domain_name, "*.", "")
-  app_name    = "chatbot"
+  app_name    = "askly"
   # Choose subdomain prefix (adjust logic as needed)
   # Map workspace "prod" to "app", others keep workspace name
   domain_prefix = terraform.workspace == "prod" ? local.app_name : "${terraform.workspace}-${local.app_name}"
