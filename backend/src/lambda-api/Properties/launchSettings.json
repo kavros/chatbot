@@ -2,7 +2,6 @@
   "profiles": {
     "lambda-api": {
       "commandName": "Project",
-      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "REGION": "eu-west-2"
