@@ -14,29 +14,26 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/");
+      navigate("/login");
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error("Error during logout:", error);
     }
   };
 
   return (
-    <nav className="navbar">
-      <div className="navbar-container">
-        <div className="navbar-brand">
-          <h1>Askly</h1>
+    <>
+      <div className="chatgpt-header">
+        <div className="header-left">
+          <div className="chatgpt-title">Askly</div>
         </div>
-        <div className="navbar-menu">
-          {children}
-          <button className="navbar-btn logout-btn" onClick={handleLogout}>
-            <span className="icon" aria-hidden>
-              ⎋
-            </span>
-            <span className="btn-text">Logout</span>
+        <div className="header-right">
+          <button className="logout-btn" onClick={handleLogout} title="Logout">
+            <span className="logout-icon">⬆</span>
+            Logout
           </button>
         </div>
       </div>
-    </nav>
+    </>
   );
 };
 
