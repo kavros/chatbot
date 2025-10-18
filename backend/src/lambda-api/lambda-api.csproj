@@ -25,7 +25,6 @@
     </PackageReference>
     <PackageReference Include="Npgsql" Version="8.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.0" />
 
     <PackageReference Include="Microsoft.Agents.AI.Abstractions" Version="1.0.0-preview.251009.1" />
     <PackageReference Include="Microsoft.Agents.AI.Hosting" Version="1.0.0-preview.251002.1" />
