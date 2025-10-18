@@ -6,11 +6,13 @@ import React, {
   ReactNode,
 } from "react";
 import apiClient from "./services/apiClient";
+import { PUBLIC_ROUTES_ARRAY } from "./constants/routes";
 
 interface AuthContextProps {
   isAuthenticated: boolean;
   loading: boolean;
   setAuthenticated: (value: boolean) => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -23,6 +25,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   useEffect(() => {
     const validateAuth = async () => {
+      // Skip validation on public routes
+      if (PUBLIC_ROUTES_ARRAY.includes(window.location.pathname)) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await apiClient("auth/validate"); // Call backend endpoint
         if (response.isAuthenticated) {
@@ -39,9 +47,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     validateAuth();
   }, []);
 
+  const logout = async () => {
+    try {
+      await apiClient("auth/logout", {
+        method: "POST",
+      });
+    } catch (error) {
+      console.error("Error during logout:", error);
+    } finally {
+      setAuthenticated(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, loading, setAuthenticated }}
+      value={{ isAuthenticated, loading, setAuthenticated, logout }}
     >
       {children}
     </AuthContext.Provider>

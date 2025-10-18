@@ -1,8 +1,17 @@
 /* ChatGPT-style interface */
+.chatbot-page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 60px); /* Full height minus navbar */
+  background-color: #282c34;
+  padding: 20px 0;
+}
+
 .chatgpt-container {
   display: flex;
   flex-direction: column;
-  height: 80vh;
+  height: calc(100vh - 100px); /* Account for navbar height and padding */
   width: 80%;
   max-width: none;
   margin: 0 auto;
@@ -12,54 +21,6 @@
   overflow: hidden;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(4px);
-}
-
-/* Header */
-.chatgpt-header {
-  background: linear-gradient(90deg, #212121 0%, #1a1a1a 100%);
-  border-bottom: 1px solid #333;
-  padding: 14px 28px;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-content h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #ececec;
-}
-
-.new-chat-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: linear-gradient(135deg, #2e2e2e, #262626);
-  border: 1px solid #3f3f3f;
-  color: #ececec;
-  padding: 8px 14px 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background 0.25s ease, border-color 0.25s ease,
-    transform 0.25s ease;
-  overflow: hidden;
-}
-.new-chat-btn:hover {
-  background: linear-gradient(135deg, #3a3a3a, #303030);
-  border-color: #555;
-}
-.new-chat-btn:active {
-  transform: translateY(1px);
-}
-.new-chat-btn .btn-text {
-  letter-spacing: 0.25px;
 }
 
 /* Icons */
@@ -340,8 +301,13 @@ typing-indicator {
 
 /* Mobile responsive design */
 @media (max-width: 768px) {
+  .chatbot-page-container {
+    padding: 10px 0;
+    min-height: calc(100vh - 60px);
+  }
+
   .chatgpt-container {
-    height: 90vh;
+    height: calc(100vh - 80px); /* Adjusted for smaller navbar */
     width: 95%;
     border-radius: 10px;
   }
@@ -393,8 +359,7 @@ typing-indicator {
   outline: 2px solid #5436da;
   outline-offset: -2px;
 }
-.send-btn:focus,
-.new-chat-btn:focus {
+.send-btn:focus {
   outline: 2px solid #5436da;
   outline-offset: 2px;
 }
@@ -416,7 +381,6 @@ typing-indicator {
 @media (prefers-reduced-motion: reduce) {
   .typing-dot,
   .send-btn,
-  .new-chat-btn,
   .input-wrapper {
     animation: none;
     transition: none;

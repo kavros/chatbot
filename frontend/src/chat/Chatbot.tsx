@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Chatbot.css";
 import apiClient from "../services/apiClient"; // Add this import
+import Navbar from "../navbar/Navbar";
 
 export interface Message {
   id: string;
@@ -120,118 +121,114 @@ const Chatbot: React.FC<ChatbotProps> = ({ onSendMessage }) => {
   };
 
   return (
-    <div className="centered-container">
-      <div className="chatgpt-container">
-        {/* Header */}
-        <div className="chatgpt-header">
-          <div className="header-content">
-            <h1>ChatBot</h1>
-            <button
-              className="new-chat-btn"
-              onClick={clearConversation}
-              title="New chat"
-            >
-              <span className="icon icon-new" aria-hidden>
-                ＋
-              </span>
-              <span className="sr-only">Start a new chat</span>
-              <span className="btn-text">New chat</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Main chat area */}
-        <div className="chatgpt-main">
-          {messages.length === 0 ? (
-            <div className="welcome-screen">
-              <div className="welcome-content">
-                <div className="chatgpt-logo" aria-hidden>
-                  AI
+    <>
+      <Navbar>
+        <button
+          className="navbar-btn new-chat-btn"
+          onClick={clearConversation}
+          title="New chat"
+        >
+          <span className="icon" aria-hidden>
+            ＋
+          </span>
+          <span className="btn-text">New chat</span>
+        </button>
+      </Navbar>
+      <div className="chatbot-page-container">
+        <div className="chatgpt-container">
+          {/* Main chat area */}
+          <div className="chatgpt-main">
+            {messages.length === 0 ? (
+              <div className="welcome-screen">
+                <div className="welcome-content">
+                  <div className="chatgpt-logo" aria-hidden>
+                    AI
+                  </div>
+                  <h2>How can I help you today?</h2>
                 </div>
-                <h2>How can I help you today?</h2>
               </div>
-            </div>
-          ) : (
-            <div className="messages-container">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`message-wrapper ${message.sender}-wrapper`}
-                >
-                  <div className="message-avatar">
-                    {message.sender === "user" ? (
-                      <div className="user-avatar">U</div>
-                    ) : (
+            ) : (
+              <div className="messages-container">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`message-wrapper ${message.sender}-wrapper`}
+                  >
+                    <div className="message-avatar">
+                      {message.sender === "user" ? (
+                        <div className="user-avatar">U</div>
+                      ) : (
+                        <div className="bot-avatar" role="img" aria-label="Bot">
+                          🤖
+                        </div>
+                      )}
+                    </div>
+                    <div className="message-content">
+                      <div className="message-text">{message.text}</div>
+                      <div className="message-meta">
+                        {new Date(message.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {isTyping && (
+                  <div className="message-wrapper bot-wrapper">
+                    <div className="message-avatar">
                       <div className="bot-avatar" role="img" aria-label="Bot">
                         🤖
                       </div>
-                    )}
-                  </div>
-                  <div className="message-content">
-                    <div className="message-text">{message.text}</div>
-                    <div className="message-meta">
-                      {new Date(message.timestamp).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                    </div>
+                    <div className="message-content">
+                      <div className="typing-indicator">
+                        <div className="typing-dot"></div>
+                        <div className="typing-dot"></div>
+                        <div className="typing-dot"></div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )}
 
-              {isTyping && (
-                <div className="message-wrapper bot-wrapper">
-                  <div className="message-avatar">
-                    <div className="bot-avatar" role="img" aria-label="Bot">
-                      🤖
-                    </div>
+                <div ref={messagesEndRef} />
+              </div>
+            )}
+
+            {/* Input area */}
+            <div className="input-area">
+              <div className="input-container">
+                <form onSubmit={handleSubmit} className="input-form">
+                  <div className="input-wrapper">
+                    <textarea
+                      ref={textareaRef}
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      placeholder="Message..."
+                      className="message-input"
+                      disabled={isLoading}
+                      rows={1}
+                    />
+                    <button
+                      type="submit"
+                      className="send-btn"
+                      disabled={!inputText.trim() || isLoading}
+                    >
+                      <span className="icon icon-send" aria-hidden>
+                        ➤
+                      </span>
+                      <span className="sr-only">Send message</span>
+                    </button>
                   </div>
-                  <div className="message-content">
-                    <div className="typing-indicator">
-                      <div className="typing-dot"></div>
-                      <div className="typing-dot"></div>
-                      <div className="typing-dot"></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-
-          {/* Input area */}
-          <div className="input-area">
-            <div className="input-container">
-              <form onSubmit={handleSubmit} className="input-form">
-                <div className="input-wrapper">
-                  <textarea
-                    ref={textareaRef}
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Message..."
-                    className="message-input"
-                    disabled={isLoading}
-                    rows={1}
-                  />
-                  <button
-                    type="submit"
-                    className="send-btn"
-                    disabled={!inputText.trim() || isLoading}
-                  >
-                    <span className="icon icon-send" aria-hidden>
-                      ➤
-                    </span>
-                    <span className="sr-only">Send message</span>
-                  </button>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

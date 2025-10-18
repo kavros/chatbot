@@ -8,6 +8,7 @@ import LoadingIndicator from "./loading/LoadingIndicator";
 import { AuthProvider } from "./AuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Chatbot from "./chat/Chatbot";
+import { PublicRoutes } from "./constants/routes";
 
 function App() {
   return (
@@ -19,9 +20,13 @@ function App() {
           <LoadingIndicator />
           <Router>
             <Routes>
-              <Route path="/" element={<Login />} />
-              <Route path="/error" element={<ErrorPage />} />
-              <Route path="*" element={<p>There's nothing here: 404!</p>} />
+              {/* Public Routes */}
+              <Route path={PublicRoutes.LOGIN} element={<Login />} />
+              <Route path={PublicRoutes.ERROR} element={<ErrorPage />} />
+              <Route
+                path={PublicRoutes.UNKNOWN}
+                element={<p>There's nothing here</p>}
+              />
 
               <Route
                 path="/main"

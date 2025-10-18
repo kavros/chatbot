@@ -94,6 +94,22 @@ namespace Controllers
         {
             return Ok(new { isAuthenticated = true });
         }
+
+        [Authorize]
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            // Remove the JWT token by setting the cookie expiration to a past date
+            HttpContext.Response.Cookies.Append("jwtToken", "", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(-1) // Set expiration to the past
+            });
+
+            return Ok(new { message = "Logged out successfully" });
+        }
     }
 
     public class LoginRequest
