@@ -21,6 +21,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/error" element={<ErrorPage />} />
+              <Route path="*" element={<p>There's nothing here: 404!</p>} />
+
               <Route
                 path="/main"
                 element={

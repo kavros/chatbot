@@ -22,12 +22,10 @@ const Login: React.FC = () => {
       });
 
       if (response) {
-        sessionStorage.setItem("jwtToken", response.accessToken);
         setAuthenticated(true); // Update global authentication state
         navigate("/main");
       } else {
-        const errorData = await response.json();
-        console.error("Login failed:", errorData);
+        console.error("Login failed");
       }
     } catch (error) {
       console.error("Error verifying user:", error);

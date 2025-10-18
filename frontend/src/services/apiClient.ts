@@ -5,17 +5,11 @@ const apiClient = async (endpoint: string, options: RequestInit = {}) => {
     throw new Error("API URL is not defined in environment variables");
   }
 
-  const jwtToken = sessionStorage.getItem("jwtToken");
-
-  const defaultHeaders = {
-    "Content-Type": "application/json",
-    ...(jwtToken && { Authorization: `Bearer ${jwtToken}` }),
-  };
-
   const config: RequestInit = {
     ...options,
+    credentials: "include", // Include cookies in requests
     headers: {
-      ...defaultHeaders,
+      "Content-Type": "application/json",
       ...options.headers,
     },
   };

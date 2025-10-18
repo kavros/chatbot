@@ -15,31 +15,41 @@ namespace Controllers
     {
         private readonly JwtSettings _jwtSettings = jwtSettings.Value;
         private readonly GoogleSettings _googleSettings = googleSettings.Value;
-
+        private readonly int _tokenExpiryMinutes = 30;
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request)
         {
             try
             {
-                //// Validate the token
+                // Validate the token
                 var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token, new GoogleJsonWebSignature.ValidationSettings
                 {
                     Audience = [_googleSettings.ClientId]
                 });
+
                 var user = new
                 {
                     payload.Email,
                     payload.Name,
                     payload.Picture
-                };                
-               var accessToken = GenerateJwtToken(payload.Email);
-                
+                };
 
-                // Return response with access token
+                // Generate JWT token
+                var accessToken = GenerateJwtToken(payload.Email);
+
+                // Set the token in an HTTP-only cookie
+                HttpContext.Response.Cookies.Append("jwtToken", accessToken, new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddMinutes(_tokenExpiryMinutes) // Set expiration
+                });
+
+                // Return user info without the token
                 return Ok(new
                 {
-                    accessToken,
                     user
                 });
             }
@@ -68,7 +78,7 @@ namespace Controllers
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(30),
+                Expires = DateTime.UtcNow.AddMinutes(_tokenExpiryMinutes),
                 Issuer = _jwtSettings.Issuer,
                 Audience = _jwtSettings.Audience,
                 SigningCredentials = creds
@@ -76,6 +86,13 @@ namespace Controllers
             var handler = new JwtSecurityTokenHandler();
             var token = handler.CreateToken(tokenDescriptor);
             return handler.WriteToken(token);
+        }
+
+        [Authorize]
+        [HttpGet("validate")]
+        public IActionResult ValidateAuth()
+        {
+            return Ok(new { isAuthenticated = true });
         }
     }
 

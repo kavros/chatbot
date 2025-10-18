@@ -7,7 +7,10 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
+  if (loading) {
+    return <div className="centered-container" />;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/error" replace />;
