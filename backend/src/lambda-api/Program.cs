@@ -98,6 +98,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwtSettings.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey))
         };
+        // Extract token from the cookie
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var token = context.HttpContext.Request.Cookies["jwtToken"];
+                if (!string.IsNullOrEmpty(token))
+                {
+                    context.Token = token;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 
 var app = builder.Build();
@@ -105,9 +118,10 @@ var app = builder.Build();
 // Configure to allow any origin, any header, and any method
 app.UseCors(policy =>
 {
-    policy.AllowAnyOrigin()
+    policy.SetIsOriginAllowed(origin => true)
           .AllowAnyHeader()
-          .AllowAnyMethod();
+          .AllowAnyMethod()
+          .AllowCredentials();
 });
 
 app.UseAuthentication();
