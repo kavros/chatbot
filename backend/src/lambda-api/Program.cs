@@ -41,7 +41,7 @@ builder.Services.Configure<GoogleSettings>(options =>
 
 builder.Services.AddChatClient(
     new ChatClient(
-            "gpt-4o",
+            "gpt-4o-mini",
             new ApiKeyCredential(githubModelsToken!),
             new OpenAIClientOptions { Endpoint = new Uri("https://models.github.ai/inference") })
         .AsIChatClient()
