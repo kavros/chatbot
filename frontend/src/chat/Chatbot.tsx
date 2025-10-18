@@ -10,11 +10,7 @@ export interface Message {
   timestamp: Date;
 }
 
-interface ChatbotProps {
-  onSendMessage?: (message: string) => Promise<string>;
-}
-
-const Chatbot: React.FC<ChatbotProps> = ({ onSendMessage }) => {
+const Chatbot: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
