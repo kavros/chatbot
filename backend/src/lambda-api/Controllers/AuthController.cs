@@ -43,7 +43,7 @@ namespace Controllers
                 {
                     HttpOnly = true,
                     Secure = true,
-                    SameSite = SameSiteMode.None,
+                    SameSite = SameSiteMode.Lax,
                     Expires = DateTime.UtcNow.AddMinutes(_tokenExpiryMinutes) // Set expiration
                 });
 
@@ -104,7 +104,7 @@ namespace Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.None,
+                SameSite = SameSiteMode.Lax,
                 Expires = DateTime.UtcNow.AddDays(-1) // Set expiration to the past
             });
 
