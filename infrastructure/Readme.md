@@ -4,7 +4,7 @@ Porkbun DNS - ACM:
 
 - Type: CNAME
 - Host: CNAME name eg (xxxxx.microapps.info) without the dots
-- Value: CNAME value eg (xxxxxx.acm-validations.aws) without the dots
+- Value: CNAME value eg (xxxxxx.acm-validations.aws) without the dots check us-east-1 region
 - TTL: default is fine
 
 Porkbun DNS - Cloudfront:
