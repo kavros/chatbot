@@ -107,7 +107,7 @@ namespace Controllers
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.None,
+                SameSite = SameSiteMode.Lax,
                 Expires = DateTime.UtcNow.AddMinutes(expiryMinutes),
                 Domain = "h5ctyejqkwfoxn6d72fr24osxe0swjjx.lambda-url.eu-west-2.on.aws"
             };                      
