@@ -1,3 +1,4 @@
+using Constants;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +12,14 @@ namespace Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class AuthController(IOptions<JwtSettings> jwtSettings, IOptions<GoogleSettings> googleSettings) : ControllerBase
+    public class AuthController(IOptions<JwtSettings> jwtSettings,
+        IOptions<GoogleSettings> googleSettings, IWebHostEnvironment env) : ControllerBase
     {
         private readonly JwtSettings _jwtSettings = jwtSettings.Value;
         private readonly GoogleSettings _googleSettings = googleSettings.Value;
         private readonly int _tokenExpiryMinutes = 30;
+        private readonly IWebHostEnvironment _env = env;
+
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginRequest request)
@@ -39,13 +43,7 @@ namespace Controllers
                 var accessToken = GenerateJwtToken(payload.Email);
 
                 // Set the token in an HTTP-only cookie
-                HttpContext.Response.Cookies.Append("jwtToken", accessToken, new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.Lax,
-                    Expires = DateTime.UtcNow.AddMinutes(_tokenExpiryMinutes) // Set expiration
-                });
+                SetHttpOnlyCookie(CookieNames.JwtToken, accessToken, _tokenExpiryMinutes);
 
                 // Return user info without the token
                 return Ok(new
@@ -61,7 +59,6 @@ namespace Controllers
             {
                 return StatusCode(500, new { message = "An error occurred", error = ex.Message });
             }
-
         }
 
         private string GenerateJwtToken(string username)
@@ -100,15 +97,27 @@ namespace Controllers
         public IActionResult Logout()
         {
             // Remove the JWT token by setting the cookie expiration to a past date
-            HttpContext.Response.Cookies.Append("jwtToken", "", new CookieOptions
+            SetHttpOnlyCookie(CookieNames.JwtToken, string.Empty, -1);
+
+            return Ok(new { message = "Logged out successfully" });
+        }
+        private void SetHttpOnlyCookie(string key, string value, int expiryMinutes)
+        {
+            var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Lax,
-                Expires = DateTime.UtcNow.AddDays(-1) // Set expiration to the past
-            });
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddMinutes(expiryMinutes)
+            };
 
-            return Ok(new { message = "Logged out successfully" });
+            // Only set the Domain attribute if the environment is not Development
+            if (!_env.IsDevelopment())
+            {
+                cookieOptions.Domain = ".lambda-url.eu-west-2.on.aws";
+            }
+
+            HttpContext.Response.Cookies.Append(key, value, cookieOptions);
         }
     }
 

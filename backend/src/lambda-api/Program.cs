@@ -1,9 +1,10 @@
+using Constants;
 using Microsoft.Agents.AI;
 using Microsoft.Agents.AI.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.AI;
+using Microsoft.IdentityModel.Tokens;
 using OpenAI;
 using OpenAI.Chat;
 using Project1.Tools;
@@ -71,7 +72,6 @@ builder.AddAIAgent("webSearchAgent", (sp, key) =>
     );
 });
 
-// Use AddIdentityCore instead of AddIdentity for API scenarios
 builder.Services.AddIdentityCore<IdentityUser<Guid>>()
     .AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<UserDbContext>();
@@ -103,7 +103,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             OnMessageReceived = context =>
             {
-                var token = context.HttpContext.Request.Cookies["jwtToken"];
+                var token = context.HttpContext.Request.Cookies[CookieNames.JwtToken];
                 if (!string.IsNullOrEmpty(token))
                 {
                     context.Token = token;
