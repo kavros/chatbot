@@ -109,14 +109,8 @@ namespace Controllers
                 Secure = true,
                 SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddMinutes(expiryMinutes),
-            };
-            
-
-            // Only set the Domain attribute if the environment is not Development
-            if (!_env.IsDevelopment())
-            {
-                cookieOptions.Domain = "dev-askly.microapps.info";
-            }
+                Domain = "h5ctyejqkwfoxn6d72fr24osxe0swjjx.lambda-url.eu-west-2.on.aws"
+            };                      
 
             HttpContext.Response.Cookies.Append(key, value, cookieOptions);
         }
