@@ -1,6 +1,7 @@
 using Constants;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,12 +14,13 @@ namespace Controllers
     [ApiController]
     [Route("[controller]")]
     public class AuthController(IOptions<JwtSettings> jwtSettings,
-        IOptions<GoogleSettings> googleSettings, IWebHostEnvironment env) : ControllerBase
+        IOptions<GoogleSettings> googleSettings, 
+        UserManager<IdentityUser<Guid>> userManager) : ControllerBase
     {
         private readonly JwtSettings _jwtSettings = jwtSettings.Value;
         private readonly GoogleSettings _googleSettings = googleSettings.Value;
         private readonly int _tokenExpiryMinutes = 30;
-        private readonly IWebHostEnvironment _env = env;
+        private readonly UserManager<IdentityUser<Guid>> _userManager = userManager;
 
         [AllowAnonymous]
         [HttpPost("login")]
@@ -32,24 +34,20 @@ namespace Controllers
                     Audience = [_googleSettings.ClientId]
                 });
 
-                var user = new
+                // Check if user exists, create if not
+                var user = await GetOrCreateUserAsync(payload.Email, payload.Name);
+                if (user == null)
                 {
-                    payload.Email,
-                    payload.Name,
-                    payload.Picture
-                };
+                    return StatusCode(500, new { message = "Failed to create or retrieve user" });
+                }
 
                 // Generate JWT token
-                var accessToken = GenerateJwtToken(payload.Email);
+                var accessToken = GenerateJwtToken(user.Id.ToString());
 
                 // Set the token in an HTTP-only cookie
                 SetHttpOnlyCookie(CookieNames.JwtToken, accessToken, _tokenExpiryMinutes);
 
-                // Return user info without the token
-                return Ok(new
-                {
-                    user
-                });
+                return Ok(new {});
             }
             catch (InvalidJwtException)
             {
@@ -61,11 +59,46 @@ namespace Controllers
             }
         }
 
-        private string GenerateJwtToken(string username)
+        private async Task<IdentityUser<Guid>?> GetOrCreateUserAsync(string email, string name)
+        {
+            // Try to find existing user by email
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                return existingUser;
+            }
+
+            // Create new user if not found
+            var newUser = new IdentityUser<Guid>
+            {
+                Id = Guid.NewGuid(),
+                UserName = email,
+                Email = email,
+                EmailConfirmed = true, // Since it's from Google OAuth, we trust the email
+            };
+
+            var result = await _userManager.CreateAsync(newUser);
+            if (result.Succeeded)
+            {
+                return newUser;
+            }
+
+            // Log the errors for debugging
+            foreach (var error in result.Errors)
+            {
+                // use ILogger here instead
+                Console.WriteLine($"User creation error: {error.Description}");
+            }
+
+            return null;
+        }
+
+        private string GenerateJwtToken( string userId)
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(JwtRegisteredClaimNames.Sub, userId),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
