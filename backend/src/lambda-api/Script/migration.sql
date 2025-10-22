@@ -9,16 +9,6 @@ IF NOT EXISTS "__EFMigrationsHistory"
 ("MigrationId")
 );
 
-CREATE TABLE
-IF NOT EXISTS owner
-(
-    id uuid NOT NULL,
-    name text NOT NULL,
-    city text NOT NULL,
-    telephone text NOT NULL,
-    CONSTRAINT "PK_owner" PRIMARY KEY
-(id)
-);
 
 INSERT INTO "__EFMigrationsHistory"
     ("MigrationId", "ProductVersion")
@@ -27,50 +17,77 @@ VALUES
 ON CONFLICT
 ("MigrationId") DO NOTHING;
 
-CREATE TABLE IF NOT EXISTS "AspNetRoleClaims" (
-    "Id" uuid NOT NULL DEFAULT (gen_random_uuid()),
+CREATE TABLE
+IF NOT EXISTS "AspNetRoleClaims"
+(
+    "Id" uuid NOT NULL DEFAULT
+(gen_random_uuid
+()),
     "RoleId" uuid NOT NULL,
     "ClaimType" text,
     "ClaimValue" text,
-    CONSTRAINT "PK_AspNetRoleClaims" PRIMARY KEY ("Id")
+    CONSTRAINT "PK_AspNetRoleClaims" PRIMARY KEY
+("Id")
 );
 
-CREATE TABLE IF NOT EXISTS "AspNetRoles" (
+CREATE TABLE
+IF NOT EXISTS "AspNetRoles"
+(
     "Id" uuid NOT NULL,
-    "Name" character varying(256),
-    "NormalizedName" character varying(256),
+    "Name" character varying
+(256),
+    "NormalizedName" character varying
+(256),
     "ConcurrencyStamp" text,
-    CONSTRAINT "PK_AspNetRoles" PRIMARY KEY ("Id")
+    CONSTRAINT "PK_AspNetRoles" PRIMARY KEY
+("Id")
 );
 
-CREATE TABLE IF NOT EXISTS "AspNetUserClaims" (
-    "Id" uuid NOT NULL DEFAULT (gen_random_uuid()),
+CREATE TABLE
+IF NOT EXISTS "AspNetUserClaims"
+(
+    "Id" uuid NOT NULL DEFAULT
+(gen_random_uuid
+()),
     "UserId" uuid NOT NULL,
     "ClaimType" text,
     "ClaimValue" text,
-    CONSTRAINT "PK_AspNetUserClaims" PRIMARY KEY ("Id")
+    CONSTRAINT "PK_AspNetUserClaims" PRIMARY KEY
+("Id")
 );
 
-CREATE TABLE IF NOT EXISTS "AspNetUserLogins" (
+CREATE TABLE
+IF NOT EXISTS "AspNetUserLogins"
+(
     "LoginProvider" text NOT NULL,
     "ProviderKey" text NOT NULL,
     "ProviderDisplayName" text,
     "UserId" uuid NOT NULL,
-    CONSTRAINT "PK_AspNetUserLogins" PRIMARY KEY ("LoginProvider", "ProviderKey")
+    CONSTRAINT "PK_AspNetUserLogins" PRIMARY KEY
+("LoginProvider", "ProviderKey")
 );
 
-CREATE TABLE IF NOT EXISTS "AspNetUserRoles" (
+CREATE TABLE
+IF NOT EXISTS "AspNetUserRoles"
+(
     "UserId" uuid NOT NULL,
     "RoleId" uuid NOT NULL,
-    CONSTRAINT "PK_AspNetUserRoles" PRIMARY KEY ("UserId", "RoleId")
+    CONSTRAINT "PK_AspNetUserRoles" PRIMARY KEY
+("UserId", "RoleId")
 );
 
-CREATE TABLE IF NOT EXISTS "AspNetUsers" (
+CREATE TABLE
+IF NOT EXISTS "AspNetUsers"
+(
     "Id" uuid NOT NULL,
-    "UserName" character varying(256),
-    "NormalizedUserName" character varying(256),
-    "Email" character varying(256),
-    "NormalizedEmail" character varying(256),
+    "UserName" character varying
+(256),
+    "NormalizedUserName" character varying
+(256),
+    "Email" character varying
+(256),
+    "NormalizedEmail" character varying
+(256),
     "EmailConfirmed" boolean NOT NULL,
     "PasswordHash" text,
     "SecurityStamp" text,
@@ -78,22 +95,33 @@ CREATE TABLE IF NOT EXISTS "AspNetUsers" (
     "PhoneNumber" text,
     "PhoneNumberConfirmed" boolean NOT NULL,
     "TwoFactorEnabled" boolean NOT NULL,
-    "LockoutEnd" timestamp with time zone,
+    "LockoutEnd" timestamp
+with time zone,
     "LockoutEnabled" boolean NOT NULL,
     "AccessFailedCount" integer NOT NULL,
-    CONSTRAINT "PK_AspNetUsers" PRIMARY KEY ("Id")
+    CONSTRAINT "PK_AspNetUsers" PRIMARY KEY
+("Id")
 );
 
-CREATE TABLE IF NOT EXISTS "AspNetUserTokens" (
+CREATE TABLE
+IF NOT EXISTS "AspNetUserTokens"
+(
     "UserId" uuid NOT NULL,
     "LoginProvider" text NOT NULL,
     "Name" text NOT NULL,
     "Value" text,
-    CONSTRAINT "PK_AspNetUserTokens" PRIMARY KEY ("UserId", "LoginProvider", "Name")
+    CONSTRAINT "PK_AspNetUserTokens" PRIMARY KEY
+("UserId", "LoginProvider", "Name")
 );
 
-CREATE UNIQUE INDEX async IF NOT EXISTS "RoleNameIndex" ON "AspNetRoles" ("NormalizedName");
+CREATE UNIQUE INDEX async
+IF NOT EXISTS "RoleNameIndex" ON "AspNetRoles"
+("NormalizedName");
 
-CREATE INDEX async IF NOT EXISTS "EmailIndex" ON "AspNetUsers" ("NormalizedEmail");
+CREATE INDEX async
+IF NOT EXISTS "EmailIndex" ON "AspNetUsers"
+("NormalizedEmail");
 
-CREATE UNIQUE INDEX async IF NOT EXISTS "UserNameIndex" ON "AspNetUsers" ("NormalizedUserName");
+CREATE UNIQUE INDEX async
+IF NOT EXISTS "UserNameIndex" ON "AspNetUsers"
+("NormalizedUserName");
