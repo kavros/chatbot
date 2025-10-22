@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace Project1.Tools
+namespace Tools
 {
     public class TavilySearchTool(IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<TavilySearchTool> logger)
     {

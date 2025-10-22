@@ -10,6 +10,7 @@ using OpenAI.Chat;
 using Project1.Tools;
 using System.ClientModel;
 using System.Text;
+using Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 
