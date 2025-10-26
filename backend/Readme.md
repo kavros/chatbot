@@ -32,18 +32,15 @@ dotnet run
 
 ```powershell
 cd src/lambda-api
-# Ensure environment variables are set
+# Ensure environment REGION, CLUSTER_ENDPOINT, CLUSTER_USER are defined.
 dotnet ef migrations add <migrationName> --context UserDbContext
 ```
 
 #### Step 2: Generate SQL Script
 
 ```powershell
-# Generate SQL from all migrations
+# Ensure environment REGION, CLUSTER_ENDPOINT, CLUSTER_USER are defined.
 dotnet ef migrations script --context UserDbContext
-
-# Or generate SQL from a specific migration
-dotnet ef migrations script <fromMigration> <toMigration> --context UserDbContext
 ```
 
 #### Step 3: Review and Prepare SQL

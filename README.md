@@ -9,11 +9,6 @@ Try the application live:
 - **Production Environment:** https://askly.microapps.info/
 - **Development Environment:** https://dev-askly.microapps.info/
 
-## 🔗 About Me
-
-- **Author:** Alexandros Kavroulakis
-- **LinkedIn:** https://www.linkedin.com/in/alexandros-kavroulakis/
-
 ---
 
 ## 🚀 Features
@@ -193,5 +188,10 @@ This project is open source and available under the [MIT License](LICENSE).
 - [Tavily](https://tavily.com/)
 - [Scrapin](https://scrapin.io/)
 - [Udemy LangChain Course](https://www.udemy.com/course/langchain/learn/lecture/44651779#overview)
+
+## 🔗 About Me
+
+- **Author:** Alexandros Kavroulakis
+- **LinkedIn:** https://www.linkedin.com/in/alexandros-kavroulakis/
 
 **Note:** Remember to add your `.env` files to `.gitignore` and never commit sensitive information like API keys or secrets to version control.
