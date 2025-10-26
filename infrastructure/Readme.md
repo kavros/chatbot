@@ -4,11 +4,9 @@ This directory contains Terraform configurations for deploying the Askly chatbot
 
 ## 🏗️ Architecture
 
-The application follows a modern serverless architecture deployed on AWS:
-
 ![Network Diagram](diagram/askly_infra.jpg)
 
-_Network diagram showing the complete infrastructure setup including CloudFront, S3, Lambda, Aurora DSQL, and external API integrations._
+_Network diagram showing the complete infrastructure setup._
 
 ## Domain Configuration
 
