@@ -1,13 +1,28 @@
-# Domain registation
+# Infrastructure Documentation
 
-Porkbun DNS - ACM:
+This directory contains Terraform configurations for deploying the Askly chatbot infrastructure on AWS.
+
+## AWS Resources
+
+- **S3 Bucket**: Static website hosting for the React frontend
+- **CloudFront**: CDN for global content delivery
+- **Lambda**: Serverless API hosting for .NET backend
+- **AWS Aurora DSQL**: PostgreSQL database
+- **ACM**: SSL/TLS certificates for custom domains
+- **Systems Manager**: Parameter store for secrets management
+
+## Domain Configuration
+
+### DNS Setup (Example: Porkbun)
+
+#### ACM Certificate Validation
 
 - Type: CNAME
-- Host: CNAME name eg (xxxxx.microapps.info) without the dots
-- Value: CNAME value eg (xxxxxx.acm-validations.aws) without the dots check us-east-1 region
+- Host: CNAME name (e.g. xxxxx.microapps.info) without the dots
+- Value: CNAME value (e.g. xxxxxx.acm-validations.aws) without the dots (check us-east-1 region)
 - TTL: default is fine
 
-Porkbun DNS - Cloudfront:
+#### CloudFront Distribution
 
 - Type: CNAME
 - Host: (the subdomain label only, e.g. dev)
