@@ -7,9 +7,11 @@ A .NET 8 AWS Lambda API with authentication, AI agents, and PostgreSQL database.
 Environment variables required:
 
 - `Jwt` - JWT settings (JSON)
-- `Google` - Google OAuth settings (JSON)
+- `TavilyAPIKey` - Tavily service API key
+- `CLUSTER_USER` - DSQL user
+- `CLUSTER_ENDPOINT` - DSQL endpoint
+- `Google:ClientId` - Google OAuth settings (JSON)
 - `GitHubModelsToken` - OpenAI API token
-- Database connection string
 
 ## Development
 
