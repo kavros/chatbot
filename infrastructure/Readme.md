@@ -2,14 +2,13 @@
 
 This directory contains Terraform configurations for deploying the Askly chatbot infrastructure on AWS.
 
-## AWS Resources
+## 🏗️ Architecture
 
-- **S3 Bucket**: Static website hosting for the React frontend
-- **CloudFront**: CDN for global content delivery
-- **Lambda**: Serverless API hosting for .NET backend
-- **AWS Aurora DSQL**: PostgreSQL database
-- **ACM**: SSL/TLS certificates for custom domains
-- **Systems Manager**: Parameter store for secrets management
+The application follows a modern serverless architecture deployed on AWS:
+
+![Network Diagram](diagram/askly_infra.jpg)
+
+_Network diagram showing the complete infrastructure setup including CloudFront, S3, Lambda, Aurora DSQL, and external API integrations._
 
 ## Domain Configuration
 
