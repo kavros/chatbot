@@ -15,18 +15,18 @@ This directory contains Terraform configurations for deploying the Askly chatbot
 
 ### DNS Setup (Example: Porkbun)
 
-#### ACM Certificate Validation
+#### ACM Certificate Registration
 
-- Type: CNAME
-- Host: CNAME name (e.g. xxxxx.microapps.info) without the dots
-- Value: CNAME value (e.g. xxxxxx.acm-validations.aws) without the dots (check us-east-1 region)
+- Select Type: CNAME
+- Enter the CNAME name (e.g. `_abc123def456.microapps.info`) - copy exactly from AWS Certificate Manager
+- Enter CNAME value (e.g. `_abc123def456.acm-validations.aws.`) - copy exactly from AWS (check us-east-1 region)
 - TTL: default is fine
 
-#### CloudFront Distribution
+#### CloudFront Distribution Registration
 
-- Type: CNAME
-- Host: (the subdomain label only, e.g. dev)
-- Value: the CloudFront distribution domain (dxxxxxxxxxxxx.cloudfront.net)
+- Select Type: CNAME
+- Enter the CNAME name (the subdomain label only, e.g. `dev`)
+- Enter the CNAME value for the CloudFront distribution domain (e.g. `d1234567890abc.cloudfront.net` - copy from Terraform output)
 - TTL: default is fine
 
 ---
@@ -47,7 +47,7 @@ The Terraform variable `enable_custom_domain` (see [variables.tf](variables.tf))
 - When `enable_custom_domain = false`:
   - No alternate domain names are set on CloudFront.
   - No ACM certificate is attached.
-  - You access the site using the default CloudFront domain that Terraform outputs (e.g. `dxxxxxxxxxxxx.cloudfront.net`).
+  - You access the site using the default CloudFront domain that Terraform outputs (e.g. `d1234567890abc.cloudfront.net`).
   - DNS changes for the custom domain are NOT required.
 
 ### Typical Workflow
@@ -59,5 +59,5 @@ The Terraform variable `enable_custom_domain` (see [variables.tf](variables.tf))
 3. Wait until the ACM certificate status becomes "Issued".
 4. Flip `enable_custom_domain` to `true` (and ensure `domain_name` matches the certificate coverage).
 5. `terraform apply` again to attach the cert and add the alternate domain names.
-6. Create / verify the DNS CNAME (e.g. `dev.microapps.info -> dxxxxxxxxxxxx.cloudfront.net`).
+6. Create / verify the DNS CNAME (e.g. `askly.microapps.info -> d1234567890abc.cloudfront.net`).
 7. Test HTTPS on the custom domain.

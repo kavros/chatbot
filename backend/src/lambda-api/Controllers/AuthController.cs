@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -146,10 +147,5 @@ namespace Controllers
 
             HttpContext.Response.Cookies.Append(key, value, cookieOptions);
         }
-    }
-
-    public class LoginRequest
-    {
-        public required string Token { get; set; }
     }
 }
