@@ -106,7 +106,7 @@ cd backend/src/lambda-api
 # Install dependencies
 dotnet restore
 
-# Set up environment variables (create .env file)
+# Set up environment variables
 # REGION=eu-west-2
 # CLUSTER_USER=admin
 # CLUSTER_ENDPOINT=your-endpoint
