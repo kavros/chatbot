@@ -9,8 +9,6 @@ Try the application live:
 - **Production Environment:** https://askly.microapps.info/
 - **Development Environment:** https://dev-askly.microapps.info/
 
----
-
 ## 🚀 Features
 
 - **AI-Powered Chatbot** using GitHub's AI models (GPT-4o-mini)
@@ -22,6 +20,21 @@ Try the application live:
 - **PostgreSQL Database** with AWS Aurora DSQL integration
 - **Continuous Deployment** via GitHub Actions
 - **Infrastructure as Code** using Terraform
+
+## 📦 Deployment
+
+The project uses GitHub Actions for continuous deployment:
+
+- **Main branch** → Deploys to development environment
+- **Production branch** → Deploys to production environment
+
+Deployment includes:
+
+1. Building and testing the frontend
+2. Deploying frontend to S3
+3. Building and packaging the Lambda function
+4. Deploying Lambda function to AWS
+5. Running database migrations
 
 ## 🛠️ Tech Stack
 
@@ -65,66 +78,6 @@ Before you begin, ensure you have the following installed:
 - [AWS CLI](https://aws.amazon.com/cli/) configured with credentials
 - [Git](https://git-scm.com/)
 
-## 🚀 Getting Started
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/chatbot-v2.git
-cd chatbot-v2
-```
-
-### 2. Frontend Setup
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Create environment file
-cp .env.example .env.local
-
-# Edit .env.local with your configuration
-# REACT_APP_API_URL=http://localhost:54793
-# REACT_APP_GOOGLE_AUTH_CLIENT_ID=your-google-client-id
-
-# Start development server
-npm start
-```
-
-### 3. Backend Setup
-
-```bash
-cd backend/src/lambda-api
-
-# Install dependencies
-dotnet restore
-
-# Set up environment variables
-# REGION=eu-west-2
-# CLUSTER_USER=admin
-# CLUSTER_ENDPOINT=your-endpoint
-
-# Run the application
-dotnet run
-```
-
-### 4. Infrastructure Setup
-
-```bash
-cd infrastructure
-
-# Initialize Terraform
-terraform init
-
-# Plan infrastructure changes
-terraform plan
-
-# Apply infrastructure (requires AWS credentials)
-terraform apply
-```
-
 ## 🔐 Environment Variables
 
 ### Frontend (.env.local)
@@ -156,21 +109,6 @@ cd backend/src/lambda-api
 dotnet test
 ```
 
-## 📦 Deployment
-
-The project uses GitHub Actions for continuous deployment:
-
-- **Main branch** → Deploys to development environment
-- **Production branch** → Deploys to production environment
-
-Deployment includes:
-
-1. Building and testing the frontend
-2. Deploying frontend to S3
-3. Building and packaging the Lambda function
-4. Deploying Lambda function to AWS
-5. Running database migrations
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
@@ -193,5 +131,3 @@ This project is open source and available under the [MIT License](LICENSE).
 
 - **Author:** Alexandros Kavroulakis
 - **LinkedIn:** https://www.linkedin.com/in/alexandros-kavroulakis/
-
-**Note:** Remember to add your `.env` files to `.gitignore` and never commit sensitive information like API keys or secrets to version control.
