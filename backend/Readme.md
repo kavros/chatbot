@@ -28,22 +28,27 @@ dotnet run
 
 ### Database Migrations
 
-Create a new migration:
+#### Step 1: Create a New Migration
 
 ```powershell
 cd src/lambda-api
-# make sure that the environemnt variables are set
+# Ensure environment variables are set
 dotnet ef migrations add <migrationName> --context UserDbContext
 ```
 
-Generate SQL script:
+#### Step 2: Generate SQL Script
 
 ```powershell
-# make sure that the environemnt variables are set
+# Generate SQL from all migrations
 dotnet ef migrations script --context UserDbContext
+
+# Or generate SQL from a specific migration
+dotnet ef migrations script <fromMigration> <toMigration> --context UserDbContext
 ```
 
-Execute:
+#### Step 3: Review and Prepare SQL
 
-1. Copy the generated SQL code to `migrations.sql`
-2. Add `if not exists` statements where necessary to prevent conflicts
+1. Copy the generated SQL code to `Script/migration.sql`
+2. Add `IF NOT EXISTS` statements where necessary to prevent conflicts
+3. Review the SQL for any Aurora DSQL compatibility issues
+4. Commit and push your updates to trigger the script execution and apply the migration via GitHub Actions.
