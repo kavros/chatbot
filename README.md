@@ -1,6 +1,6 @@
 # Askly - AI-Powered Chatbot Application
 
-A modern, full-stack AI chatbot application built with React, .NET 8, and AWS infrastructure. This project demonstrates advanced cloud-native development patterns, AI integration, and serverless architecture.
+This is a chatbot driven by an autonomous AI agent that can search the web in real time and extract data from LinkedIn profiles to answer your questions.
 
 ## 🌐 Live Demo
 
