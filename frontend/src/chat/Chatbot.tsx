@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./Chatbot.css";
-import apiClient from "../services/apiClient";
+import { streamApiClient } from "../services/apiClient";
 import Navbar from "../navbar/Navbar";
 
 export interface Message {
@@ -60,41 +60,78 @@ const Chatbot: React.FC = () => {
     setIsTyping(true);
     setIsLoading(true);
 
+    // Create a placeholder bot message that will be updated as we stream
+    const botMessageId = Date.now().toString() + "_bot";
+    const botMessage: Message = {
+      id: botMessageId,
+      text: "",
+      sender: "bot",
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, botMessage]);
+
     try {
-      let botResponse;
+      await streamApiClient(
+        "Agent/chat/stream",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            message: messageText.trim(),
+            chatHistory: messages,
+          }),
+        },
+        (data) => {
+          // First chunk received - stop typing indicator but keep loading
+          if (data.text && data.text.length > 0) {
+            setIsTyping(false);
+          }
 
-      // Use apiClient instead of fetch
-      const response = await apiClient("Agent/chat", {
-        method: "POST",
-        body: JSON.stringify({
-          message: messageText.trim(),
-          chatHistory: messages,
-        }),
-      });
+          // Update the bot message with streaming text
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === botMessageId ? { ...msg, text: data.text } : msg
+            )
+          );
 
-      if (response) {
-        botResponse = response.text;
-      } else {
-        botResponse = "Sorry, I couldn't get a response from the server.";
-      }
-
-      const botMessage: Message = {
-        id: Date.now().toString() + "_bot",
-        text: botResponse,
-        sender: "bot",
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, botMessage]);
+          // Stream completed
+          if (data.isComplete) {
+            setIsLoading(false);
+          }
+        },
+        (error) => {
+          console.error("Streaming error:", error);
+          setIsTyping(false);
+          setIsLoading(false);
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === botMessageId
+                ? {
+                    ...msg,
+                    text: "Sorry, I encountered an error while processing your message. Please try again.",
+                  }
+                : msg
+            )
+          );
+        },
+        () => {
+          // Stream completed
+          setIsTyping(false);
+          setIsLoading(false);
+        }
+      );
     } catch (error) {
-      const errorMessage: Message = {
-        id: Date.now().toString() + "_error",
-        text: "Sorry, I encountered an error while processing your message. Please try again.",
-        sender: "bot",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
+      console.error("Error starting stream:", error);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === botMessageId
+            ? {
+                ...msg,
+                text: "Sorry, I encountered an error while processing your message. Please try again.",
+              }
+            : msg
+        )
+      );
       setIsTyping(false);
       setIsLoading(false);
     }
@@ -146,25 +183,20 @@ const Chatbot: React.FC = () => {
                   )}
                 </div>
                 <div className="message-content">
-                  <div className="message-text">{message.text}</div>
+                  {message.sender === "bot" &&
+                  message.text === "" &&
+                  isTyping ? (
+                    <div className="typing-indicator">
+                      <div className="typing-dot"></div>
+                      <div className="typing-dot"></div>
+                      <div className="typing-dot"></div>
+                    </div>
+                  ) : (
+                    <div className="message-text">{message.text}</div>
+                  )}
                 </div>
               </div>
             ))}
-
-            {isTyping && (
-              <div className="message-wrapper bot-message">
-                <div className="message-avatar">
-                  <div className="bot-avatar">🤖</div>
-                </div>
-                <div className="message-content">
-                  <div className="typing-indicator">
-                    <div className="typing-dot"></div>
-                    <div className="typing-dot"></div>
-                    <div className="typing-dot"></div>
-                  </div>
-                </div>
-              </div>
-            )}
 
             <div ref={messagesEndRef} />
           </div>
