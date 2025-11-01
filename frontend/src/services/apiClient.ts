@@ -42,6 +42,7 @@ export const streamApiClient = async (
   const config: RequestInit = {
     ...options,
     credentials: "include", // Include cookies in requests
+    mode: "cors", // Explicitly set CORS mode
     headers: {
       "Content-Type": "application/json",
       Accept: "text/event-stream",

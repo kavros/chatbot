@@ -31,8 +31,14 @@ namespace Controllers
         [HttpPost("chat/stream")]
         public async Task ChatStream(ChatRequest request)
         {
+            // Add CORS headers for SSE
+            Response.Headers.Append("Access-Control-Allow-Origin", "*");
+            Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+            Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization, Cookie");
+
             Response.Headers.ContentType = "text/event-stream";
             Response.Headers.CacheControl = "no-cache";
+            Response.Headers.Append("Connection", "keep-alive");
 
             string chatHistoryJson = JsonSerializer.Serialize(request.ChatHistory);
             var questionAndChatHistory = request.Message +
