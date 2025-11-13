@@ -21,7 +21,7 @@ namespace Controllers
 
             string chatHistoryJson = JsonSerializer.Serialize(request.ChatHistory);
 
-            var questionAndChatHistory = request.Message + 
+            var questionAndChatHistory = request.Message +
                 $"The chat history is the following {chatHistoryJson}";
 
             var response = await webSearchAgent.RunAsync(questionAndChatHistory);

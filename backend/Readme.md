@@ -1,0 +1,53 @@
+# Backend API
+
+A .NET 8 AWS Lambda API with authentication, AI agents, and PostgreSQL database.
+
+## Configuration
+
+Environment variables required:
+
+- `Jwt` - JWT settings (JSON)
+- `TavilyAPIKey` - Tavily service API key
+- `CLUSTER_USER` - DSQL user
+- `CLUSTER_ENDPOINT` - DSQL endpoint
+- `Google:ClientId` - Google OAuth settings (JSON)
+- `GitHubModelsToken` - OpenAI API token
+
+## Development
+
+### Prerequisites
+
+- .NET 8 SDK
+- PostgreSQL database
+- AWS credentials configured
+
+### Running Locally
+
+```bash
+cd src/lambda-api
+dotnet run
+```
+
+### Database Migrations
+
+#### Step 1: Create a New Migration
+
+```powershell
+cd src/lambda-api
+# Ensure environment REGION, CLUSTER_ENDPOINT, CLUSTER_USER are defined.
+dotnet ef migrations add <migrationName> --context UserDbContext
+```
+
+#### Step 2: Generate SQL Script
+
+```powershell
+# Ensure environment REGION, CLUSTER_ENDPOINT, CLUSTER_USER are defined.
+dotnet ef migrations script --context UserDbContext
+```
+
+#### Step 3: Review and Prepare SQL
+
+1. Copy the generated SQL code to `Script/migration.sql`
+2. Add `IF NOT EXISTS` statements where necessary to prevent conflicts
+3. Review the SQL for any Aurora DSQL compatibility issues
+4. Commit and push your updates to trigger the script execution and apply the migration via GitHub Actions.

@@ -50,14 +50,11 @@ builder.Services.AddChatClient(
         );
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<TavilySearchTool>();
-builder.Services.AddSingleton<ScrapinLinkedInTool>();
-builder.Services.AddSingleton<LinkedInEnrichmentTool>();
 builder.Services.AddSingleton<DateTool>();
 
 builder.AddAIAgent("webSearchAgent", (sp, key) =>
 {
     var chatClient = sp.GetRequiredService<IChatClient>();
-    var linkedInEnrichmentTool = sp.GetRequiredService<LinkedInEnrichmentTool>();
     var tavilySearchTool = sp.GetRequiredService<TavilySearchTool>();
     var dateTool = sp.GetRequiredService<DateTool>();
 
@@ -66,7 +63,6 @@ builder.AddAIAgent("webSearchAgent", (sp, key) =>
         name: key,
         instructions: "You are a helpful assistant",
         tools: [
-            AIFunctionFactory.Create(linkedInEnrichmentTool.EnrichLinkedInProfileAsync),
             AIFunctionFactory.Create(tavilySearchTool.SearchTavilyAsync),
             AIFunctionFactory.Create(dateTool.GetCurrentDateAsync)
         ]
