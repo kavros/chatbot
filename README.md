@@ -1,6 +1,6 @@
 # Askly - AI-Powered Chatbot Application
 
-This is a chatbot driven by an autonomous AI agent that can search the web in real time and extract data from LinkedIn profiles to answer your questions.
+This is a chatbot driven by an autonomous AI agent that can search the web in real time to answer your questions.
 
 ## 🌐 Live Demo
 
@@ -13,7 +13,6 @@ Try the application live:
 
 - **AI-Powered Chatbot** using GitHub's AI models (GPT-4o-mini)
 - **Web Search Integration** via Tavily API for real-time information retrieval
-- **LinkedIn Profile Enrichment** using Scrapin API
 - **Google OAuth Authentication** for secure user login
 - **Serverless Architecture** deployed on AWS Lambda
 - **CloudFront CDN** for fast global content delivery
@@ -66,7 +65,6 @@ Deployment includes:
 
 - **GitHub AI Models** - GPT-4o-mini for chatbot logic
 - **Tavily API** - Web search capabilities
-- **Scrapin API** - LinkedIn profile enrichment
 
 ## 📋 Prerequisites
 
@@ -91,7 +89,6 @@ REACT_APP_GOOGLE_AUTH_CLIENT_ID=your-google-client-id
 
 ```
 TavilyAPIKey=your-tavily-api-key
-ScrapintAPIKey=your-scrapin-api-key
 GitHubModelsToken=your-github-models-token
 Jwt={...}
 Google={...}
@@ -124,7 +121,6 @@ This project is open source and available under the [MIT License](LICENSE).
 - [AWS](https://aws.amazon.com/)
 - [GitHub AI](https://github.com/features/ai)
 - [Tavily](https://tavily.com/)
-- [Scrapin](https://scrapin.io/)
 - [Udemy LangChain Course](https://www.udemy.com/course/langchain/learn/lecture/44651779#overview)
 
 ## 🔗 About Me
